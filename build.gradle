@@ -1,0 +1,266 @@
+	import groovy.json.JsonSlurper
+	import net.fabricmc.loom.task.RemapJarTask
+	
+buildscript {
+repositories {
+    maven {
+    	name = "maven2"
+        url = "https://repo1.maven.org/maven2"
+    }
+    maven { url "https://jitpack.io" }
+        mavenCentral()
+        flatDir {
+            dirs 'depLib'
+        }
+    }
+    dependencies {
+		classpath files('depLib/ploceus-1.17.local.jar')
+		classpath files('depLib/signature-changer-1.0.0.jar')
+		classpath files('depLib/mapping-utils-0.19.2.jar')
+		classpath files('depLib/nester-1.4.0.jar')
+		classpath files('depLib/exceptor-1.1.0.jar')
+		classpath files('depLib/preen-1.1.0.jar')
+		classpath files('depLib/condor-1.4.5.jar')
+		classpath 'com.vdurmont:semver4j:3.1.0'
+    }
+}
+
+plugins {
+    id 'fabric-loom' version "1.17.17"
+    id 'com.gradleup.shadow' version '9.5.1'
+    //id 'org.projectlombok' version "1.18.30"
+    id 'maven-publish'
+    //id 'ploceus' version "1.5-SNAPSHOT"
+    id 'com.modrinth.minotaur' version "2.+"
+}
+
+apply plugin: 'ploceus'
+
+//import net.ornithemc.ploceus.GameSide
+
+java {
+    withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+base.archivesName = project.archives_base_name
+version = project.mod_version+"+"+project.minecraft_version
+group = project.maven_group
+
+loom {
+    mods {
+        "legacy-lwjgl3" {
+            sourceSet("main")
+        }
+    }
+
+    clientOnlyMinecraftJar()
+}
+
+ploceus {
+	setIntermediaryGeneration(2)
+	disableLibraryUpgrades()
+    clientOnlyMappings()
+}
+
+project.ext.lwjglVersion = "3.3.2"
+
+dependencies {
+    //mappings project.loom.layered {
+        //mappings "net.ornithemc:feather:${project.rootProject.minecraft_version}-client+build.${project.feather_build}:v2"
+        //addLayer project.ploceus.nestedMappings() // remove this line if not using nests
+   // }
+    //nests "net.ornithemc:nests:${project.rootProject.minecraft_version}-client+build.${project.nests_build}" // remove this line if not using nests
+
+	implementation 'it.unimi.dsi:fastutil:8.5.11'
+	implementation "org.apache.commons:commons-lang3:3.14.0"
+	implementation "io.netty:netty-all:4.1.94.Final"
+	implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
+	implementation "com.google.code.gson:gson:2.10.1"
+	implementation "com.google.guava:guava:33.2.1-jre"
+	implementation "org.apache.commons:commons-io:1.3.2"
+	
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-blocks-0.1.1+mca1.0.1_01-mc1.6.4.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-branding-0.4.3+mca1.0.1_01-mca1.2.1_01.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-core-0.9.0+mca1.0.1_01-mc14w26c.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-entrypoints-0.6.1+mca1.0.1_01-mc1.5.2.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-executors-0.1.0+mcin-20100128-2304-mcb1.9-pre2.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-items-0.1.0+mca1.0.1_01-mc1.6.4.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-keybinds-0.3.0+mca1.0.1_01-mcb1.7.3.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-lifecycle-events-0.6.1+mca1.0.1_01-mca1.2.6.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-localization-0.1.0+mca1.0.1_01-mca1.2.6.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-networking-0.9.0+mca1.0.16-mca1.2.6.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-networking-impl-0.1.1+mca1.0.16-mca1.2.6.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-resource-loader-0.7.4+mca1.0.1_01-mca1.2.1_01.jar')
+	modImplementation files('depLib/ornithe-standard-libraries-0.20.3/osl-text-components-0.1.0-alpha.3+mca0.1.0-mc1.14.4.jar')
+
+    implementation("org.javassist:javassist:3.29.2-GA")
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    modImplementation files('depLib/cypress_lib_core-0.1+mca1.0.16.05_20.jar')
+
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings ("net.ornithemc:feather-gen2:a1.0.16.05_20+build.1-v2")
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-opengl"
+    for (String platform : ["linux", "windows", "macos", "windows-arm64", "macos-arm64"]){
+        runtimeOnly "org.lwjgl:lwjgl::natives-$platform"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::natives-$platform"
+        runtimeOnly "org.lwjgl:lwjgl-openal::natives-$platform"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::natives-$platform"
+    }
+
+    //ploceus.addCommonLibraries()
+    //ploceus.dependOsl("modRuntimeOnly", osl_version, GameSide.CLIENT)
+
+
+}
+
+configurations.configureEach {
+    exclude group: "org.lwjgl.lwjgl"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (JavaVersion.current().isJava9Compatible()) it.options.release = 8
+}
+
+jar {
+    //from("LICENSE") {
+    //    rename { "${it}_${archivesBaseName}" }
+    //}
+}
+
+shadowJar {
+    minimize {
+        exclude(dependency("org.lwjgl:lwjgl:$lwjglVersion"))
+        exclude(dependency("org.lwjgl:lwjgl-glfw:$lwjglVersion"))
+        exclude(dependency("org.lwjgl:lwjgl-openal:$lwjglVersion"))
+        exclude(dependency("org.lwjgl:lwjgl-opengl:$lwjglVersion"))
+    }
+    dependencies {
+        include(dependency("org.javassist:javassist:3.29.2-GA"))
+
+        include(dependency("org.lwjgl:lwjgl:$lwjglVersion"))
+        include(dependency("org.lwjgl:lwjgl-glfw:$lwjglVersion"))
+        include(dependency("org.lwjgl:lwjgl-openal:$lwjglVersion"))
+        include(dependency("org.lwjgl:lwjgl-opengl:$lwjglVersion"))
+    }
+}
+
+tasks.register('remapShadowJar', RemapJarTask) {
+    dependsOn shadowJar
+    input = shadowJar.archiveFile
+    setArchiveClassifier("all-remapped")
+    addNestedDependencies = false
+}
+
+tasks.build.dependsOn remapShadowJar
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) { publication ->
+            from components.java
+            artifact remapShadowJar
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        maven {
+            name = "owlMaven"
+            def repository = project.version.toString().contains("beta") || project.version.toString().contains("alpha") ? "snapshots" : "releases"
+            url = "https://moehreag.duckdns.org/maven/" + repository
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}
+
+tasks.modrinth.dependsOn publish
+
+static def fetchGameVersions(){
+
+    List<String> versions = new ArrayList<>()
+    InputStream stream = URI.create("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json").toURL().openStream()
+    JsonSlurper slurper = new JsonSlurper()
+    Map<String, ?> map = slurper.parse(stream) as Map<String, ?>
+    List<Version> json =  map.get("versions") as List<Version>
+    json.forEach(ve -> {
+        if (ve.id.startsWith("a1.")){
+            def v = ve.id
+            String[] parts = v.split("\\.")
+            int minor = Integer.parseInt(parts[1])
+            if (minor > 0){
+                versions.add(v)
+                return
+            }
+            int patch = Integer.parseInt(parts[2].split("_")[0].split("-")[0])
+            if (patch >= 16){
+                versions.add(v)
+            }
+        } else if (ve.id.startsWith("b1.")) {
+            def v = ve.id
+            String[] parts = v.split("\\.")
+
+            if (parts[1].contains("-") && parts[1].split("-", 2)[1].contains("t")){
+                return
+            }
+
+            if (parts[1] == "3b"){
+                versions.add(v)
+                return
+            }
+
+            int minor = Integer.parseInt(parts[1].split("_")[0].split("-")[0])
+            if (minor < 7){
+                versions.add(v)
+                return
+            }
+            if (parts.length == 2 && parts[1] == "7"){
+                versions.add(v)
+            }
+            if (parts.length != 3){
+                return
+            }
+        }
+    })
+    return versions
+}
+
+class Version {
+    String id
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "lpiIRiAZ"
+    versionType = "release"
+    uploadFile = remapShadowJar
+    additionalFiles = [sourcesJar]
+    //gameVersions = fetchGameVersions()
+    loaders = ["fabric", "quilt"]
+    //dependencies {
+    //    optional.project "osl"
+    //}
+}
