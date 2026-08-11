@@ -12,7 +12,7 @@
     "FMG793 (port to cypress fabric)"
   ],
   "contact": {
-    "sources": "https://github.com/Zarzelcow/legacy-lwjgl3"
+    "sources": "https://github.com/Cfauto28/CypressLWJGL3"
   },
   "license": "LGPL-2.1-only",
   "icon": "assets/legacy-lwjgl3/icon.png",
@@ -28,7 +28,8 @@
   "depends": {
     "fabricloader": ">=0.12.0",
     "minecraft": "<1.13",
-    "cypress_lib_core": "*"
+    "cypress_lib_core": "*",
+    "osl": "*"
   },
   "conflicts": {
     "de_awt": "*"
