@@ -9,10 +9,8 @@
 		"MinecraftAppletMixin",
 		"MinecraftMixin",
 		"MixinMinecraftDrawVirtualCursor",
-		"MixinMinecraftFixEarlyCrashNoReports",
 		"MixinScreenFixClipboard",
-		"MouseMixin",
-		"MixinResourceDownloadThread"
+		"MouseMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

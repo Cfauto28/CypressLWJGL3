@@ -24,8 +24,8 @@ public abstract class MinecraftAppletMixin extends Applet {
 
 	@Inject(method = "init", remap = false, at = @At("HEAD"), cancellable = true)
 	private void onAppletInit(CallbackInfo ci){
-		LegacyLWJGL3.LOGGER.info("Creating GLFW window from Applet!");
 		ci.cancel();
+		LegacyLWJGL3.LOGGER.info("Creating GLFW window from Applet!");
 		Applet launcher = ((Applet) this.getParent());
 
 		boolean var1 = false;
